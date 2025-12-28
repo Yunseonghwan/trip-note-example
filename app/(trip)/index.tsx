@@ -1,10 +1,11 @@
-import { Text } from "react-native";
+import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MyTripList = () => {
   return (
     <SafeAreaView>
-      <Text>dasd</Text>
+      <Link href="/createTrip">여행 생성</Link>
+      <Link href="/updateTrip">여행 수정</Link>
     </SafeAreaView>
   );
 };
