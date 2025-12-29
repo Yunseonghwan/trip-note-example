@@ -1,6 +1,10 @@
 import { api } from "@/api";
 import { CreateTripRequestType, TripListResponseType } from "@/types/tripTypes";
-import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  UseInfiniteQueryResult,
+  useMutation,
+} from "@tanstack/react-query";
 
 export const useCreateTrip = () => {
   return useMutation({
@@ -11,12 +15,24 @@ export const useCreateTrip = () => {
   });
 };
 
-export const useGetTrips = (): UseQueryResult<TripListResponseType> => {
-  return useQuery({
+export const useGetTrips = (): UseInfiniteQueryResult<{
+  pages: TripListResponseType[];
+  pageParams: number[];
+}> => {
+  return useInfiniteQuery({
     queryKey: ["trips"],
-    queryFn: async () => {
-      const res = await api.get("/trips");
-      return res.data;
+    queryFn: async ({ pageParam }) => {
+      const res = await api.get("/trips", {
+        params: { page: pageParam },
+      });
+      return res.data as TripListResponseType;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (lastPage.meta.hasNextPage) {
+        return lastPage.meta.currentPage + 1;
+      }
+      return undefined;
     },
   });
 };
