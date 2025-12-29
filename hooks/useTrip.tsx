@@ -4,13 +4,18 @@ import {
   useInfiniteQuery,
   UseInfiniteQueryResult,
   useMutation,
+  useQueryClient,
 } from "@tanstack/react-query";
 
 export const useCreateTrip = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (body: CreateTripRequestType) => {
       const res = await api.post("/trips", body);
       return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trips"] });
     },
   });
 };
