@@ -20,6 +20,7 @@ interface TripFormProps {
   setStartDate: React.Dispatch<React.SetStateAction<Date>>;
   endDate: Date;
   setEndDate: React.Dispatch<React.SetStateAction<Date>>;
+  onPress: () => void;
 }
 
 const TripForm = ({
@@ -29,6 +30,7 @@ const TripForm = ({
   setStartDate,
   endDate,
   setEndDate,
+  onPress,
 }: TripFormProps) => {
   return (
     <KeyboardAvoidingView
@@ -73,7 +75,7 @@ const TripForm = ({
             </View>
           </View>
           <View style={styles.buttonContainer}>
-            <Button label="여행 만들기" />
+            <Button label="여행 만들기" onPress={onPress} />
           </View>
         </ScrollView>
       </SafeAreaView>
