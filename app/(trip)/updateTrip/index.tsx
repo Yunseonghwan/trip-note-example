@@ -18,6 +18,7 @@ const UpdateTripScreen = () => {
       handleTitleChange={handleTitleChange}
       setStartDate={setStartDate}
       setEndDate={setEndDate}
+      onPress={() => null}
     />
   );
 };
