@@ -1,11 +1,24 @@
-import { Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import TripForm from "@/components/TripForm";
+import { useState } from "react";
 
 const UpdateTripScreen = () => {
+  const [title, setTitle] = useState("");
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+
+  const handleTitleChange = (text: string) => {
+    setTitle(text);
+  };
+
   return (
-    <SafeAreaView>
-      <Text>update trip</Text>
-    </SafeAreaView>
+    <TripForm
+      title={title}
+      startDate={startDate}
+      endDate={endDate}
+      handleTitleChange={handleTitleChange}
+      setStartDate={setStartDate}
+      setEndDate={setEndDate}
+    />
   );
 };
 export default UpdateTripScreen;
