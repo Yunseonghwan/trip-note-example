@@ -1,3 +1,4 @@
+import Modal from "@/components/Modal";
 import TripListItem from "@/components/TripListItem";
 import { theme } from "@/constants/theme";
 import { useGetTrips } from "@/hooks/useTrip";
@@ -5,7 +6,7 @@ import { useTripStore } from "@/store/tripStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Text } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -17,7 +18,29 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const MyTripList = () => {
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+  const handleModal = (tripId: string) => {
+    setIsModalOpen(true);
+    setSelectedTripId(tripId);
+  };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTripId(null);
+  };
 
+  const handleEdit = (tripId: string) => {
+    router.push({
+      pathname: "/updateTrip",
+      params: { tripId },
+    });
+    handleCloseModal();
+  };
+
+  const handleDelete = (tripId: string) => {
+    console.log(tripId);
+    handleCloseModal();
+  };
   // Zustand store
   const { cachedTrips, setCachedTrips, isCacheValid } = useTripStore();
 
@@ -75,7 +98,7 @@ const MyTripList = () => {
                 params: { tripId: item.id },
               })
             }
-            handleModal={() => {}}
+            handleModal={() => handleModal(item.id)}
           />
         )}
         ListEmptyComponent={() => (
@@ -102,6 +125,13 @@ const MyTripList = () => {
       >
         <AntDesign name="plus" size={24} color="#fff" />
       </Pressable>
+      <Modal
+        isOpen={isModalOpen}
+        selectedTripId={selectedTripId}
+        onEdit={handleEdit}
+        onPressDelete={handleDelete}
+        onClose={handleCloseModal}
+      />
     </SafeAreaView>
   );
 };
