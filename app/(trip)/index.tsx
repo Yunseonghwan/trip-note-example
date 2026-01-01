@@ -1,23 +1,20 @@
 import Modal from "@/components/Modal";
+import PlusButton from "@/components/PlusButton";
 import TripListItem from "@/components/TripListItem";
 import { theme } from "@/constants/theme";
 import { useDeleteTrip, useGetTrips } from "@/hooks/useTrip";
 import { useTripStore } from "@/store/tripStore";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { useTripTitleStore } from "@/store/tripTitleStore";
 import { Text } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  StyleSheet,
-} from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MyTripList = () => {
   const router = useRouter();
+  const { setTitle } = useTripTitleStore((state) => state.action);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
 
@@ -98,12 +95,13 @@ const MyTripList = () => {
             title={item.title}
             startDate={item.startDate}
             endDate={item.endDate}
-            goDetail={() =>
+            goDetail={() => {
+              setTitle(item.title);
               router.push({
                 pathname: "/(trip)/[tripId]",
                 params: { tripId: item.id },
-              })
-            }
+              });
+            }}
             handleModal={() => handleModal(item.id)}
           />
         )}
@@ -125,12 +123,7 @@ const MyTripList = () => {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
       />
-      <Pressable
-        style={styles.button}
-        onPress={() => router.push("/createTrip")}
-      >
-        <AntDesign name="plus" size={24} color="#fff" />
-      </Pressable>
+      <PlusButton onPress={() => router.push("/createTrip")} />
       <Modal
         isOpen={isModalOpen}
         selectedTripId={selectedTripId}
