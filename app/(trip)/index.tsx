@@ -1,7 +1,7 @@
 import Modal from "@/components/Modal";
 import TripListItem from "@/components/TripListItem";
 import { theme } from "@/constants/theme";
-import { useGetTrips } from "@/hooks/useTrip";
+import { useDeleteTrip, useGetTrips } from "@/hooks/useTrip";
 import { useTripStore } from "@/store/tripStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Text } from "@react-navigation/elements";
@@ -20,6 +20,9 @@ const MyTripList = () => {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+
+  const { mutateAsync } = useDeleteTrip();
+
   const handleModal = (tripId: string) => {
     setIsModalOpen(true);
     setSelectedTripId(tripId);
@@ -38,8 +41,11 @@ const MyTripList = () => {
   };
 
   const handleDelete = (tripId: string) => {
-    console.log(tripId);
-    handleCloseModal();
+    mutateAsync(tripId, {
+      onSuccess: () => {
+        handleCloseModal();
+      },
+    });
   };
   // Zustand store
   const { cachedTrips, setCachedTrips, isCacheValid } = useTripStore();
