@@ -126,7 +126,7 @@ const MyTripList = () => {
       <PlusButton onPress={() => router.push("/createTrip")} />
       <Modal
         isOpen={isModalOpen}
-        selectedTripId={selectedTripId}
+        selectedId={selectedTripId}
         onEdit={handleEdit}
         onPressDelete={handleDelete}
         onClose={handleCloseModal}

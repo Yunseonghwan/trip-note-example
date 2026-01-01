@@ -10,15 +10,15 @@ import Animated, {
 
 interface ModalProps {
   isOpen: boolean;
-  selectedTripId: string | null;
-  onEdit: (tripId: string) => void;
-  onPressDelete: (tripId: string) => void;
+  selectedId: string | null;
+  onEdit: (id: string) => void;
+  onPressDelete: (id: string) => void;
   onClose: () => void;
 }
 
 const Modal = ({
   isOpen,
-  selectedTripId,
+  selectedId,
   onEdit,
   onPressDelete,
   onClose,
@@ -53,15 +53,12 @@ const Modal = ({
     <Animated.View style={styles.container}>
       <Pressable style={styles.dimArea} onPress={onClose} />
       <Animated.View style={[styles.content, contentStyle]}>
-        <Pressable
-          style={styles.button}
-          onPress={() => onEdit(selectedTripId!)}
-        >
+        <Pressable style={styles.button} onPress={() => onEdit(selectedId!)}>
           <Text style={styles.buttonText}>수정</Text>
         </Pressable>
         <Pressable
           style={[styles.button, styles.deleteButton]}
-          onPress={() => onPressDelete(selectedTripId!)}
+          onPress={() => onPressDelete(selectedId!)}
         >
           <Text style={styles.deleteButtonText}>삭제</Text>
         </Pressable>

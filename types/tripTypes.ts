@@ -16,3 +16,15 @@ export interface TripListResponseType {
   data: TripItemType[];
   meta: MetaType;
 }
+
+export interface TripDetailItemType {
+  id: string;
+  title: string;
+  image: string;
+  createdAt: string | Date;
+}
+
+export interface TripItemListResponseType {
+  data: TripDetailItemType[];
+  meta: MetaType;
+}

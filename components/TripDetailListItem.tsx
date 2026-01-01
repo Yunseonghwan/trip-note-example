@@ -4,16 +4,28 @@ import { Image } from "expo-image";
 import { memo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-const TripDetailListItem = () => {
+interface TripDetailListItemProps {
+  title: string;
+  date: string;
+  handleModal: () => void;
+  goDetail: () => void;
+}
+
+const TripDetailListItem = ({
+  title,
+  date,
+  handleModal,
+  goDetail,
+}: TripDetailListItemProps) => {
   return (
-    <Pressable>
+    <Pressable onPress={goDetail}>
       <Image contentFit="cover" source={{ uri: "" }} style={styles.image} />
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <Text style={styles.title}>제목</Text>
-          <Text style={styles.date}>날짜</Text>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.date}>{date}</Text>
         </View>
-        <Pressable>
+        <Pressable onPress={handleModal}>
           <MaterialIcons name="more-vert" size={24} color="black" />
         </Pressable>
       </View>
