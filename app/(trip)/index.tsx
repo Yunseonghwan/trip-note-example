@@ -1,12 +1,11 @@
 import TripListItem from "@/components/TripListItem";
 import { theme } from "@/constants/theme";
 import { useGetTrips } from "@/hooks/useTrip";
-import { storageService } from "@/services/storageService";
-import { TripListResponseType } from "@/types/tripTypes";
+import { useTripStore } from "@/store/tripStore";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Text } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -16,15 +15,11 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const CACHE_KEY = "trips_cache";
-const CACHE_EXPIRY_KEY = "trips_cache_expiry";
-const CACHE_DURATION = 1000 * 60 * 5; // 5분
-
 const MyTripList = () => {
   const router = useRouter();
-  const [cachedData, setCachedData] = useState<TripListResponseType | null>(
-    null
-  );
+
+  // Zustand store
+  const { cachedTrips, setCachedTrips, isCacheValid } = useTripStore();
 
   const {
     data: trips,
@@ -33,67 +28,28 @@ const MyTripList = () => {
     isFetchingNextPage,
   } = useGetTrips();
 
-  // 캐시에 데이터 저장
-  const saveToCache = useCallback(async (data: TripListResponseType) => {
-    try {
-      await Promise.all([
-        storageService.setItem(CACHE_KEY, JSON.stringify(data)),
-        storageService.setItem(
-          CACHE_EXPIRY_KEY,
-          JSON.stringify(Date.now() + CACHE_DURATION)
-        ),
-      ]);
-    } catch (error) {
-      console.error("캐시 저장 실패:", error);
-    }
-  }, []);
-
-  // 캐시에서 데이터 로드
-  const loadFromCache = useCallback(async () => {
-    try {
-      const [cached, expiry] = await Promise.all([
-        storageService.getItem(CACHE_KEY),
-        storageService.getItem(CACHE_EXPIRY_KEY),
-      ]);
-
-      if (cached && expiry) {
-        const isExpired = Date.now() > expiry;
-        if (!isExpired) {
-          setCachedData(cached);
-        }
-      }
-    } catch (error) {
-      console.error("캐시 로드 실패:", error);
-    }
-  }, []);
-
-  // 컴포넌트 마운트 시 캐시 로드
-  useEffect(() => {
-    loadFromCache();
-  }, [loadFromCache]);
-
   // API 데이터 받아오면 캐시 업데이트 (첫 페이지만)
   useEffect(() => {
     if (trips?.pages[0]) {
-      saveToCache(trips.pages[0]);
+      setCachedTrips(trips.pages[0]);
     }
-  }, [trips, saveToCache]);
+  }, [trips, setCachedTrips]);
 
   const combinedTrips = useMemo(() => {
-    // API 데이터가 있으면 우선 사용, 없으면 캐시 데이터 사용
+    // API 데이터가 있으면 우선 사용
     if (trips?.pages.length) {
       const data = trips.pages.flatMap((page) => page.data) ?? [];
       const meta = trips.pages[0]?.meta;
       return { data, meta };
     }
 
-    // API 로딩 중이거나 에러일 때 캐시 데이터 사용
-    if (cachedData) {
-      return { data: cachedData.data, meta: cachedData.meta };
+    // API 로딩 중이거나 에러일 때 유효한 캐시 데이터 사용
+    if (cachedTrips && isCacheValid()) {
+      return { data: cachedTrips.data, meta: cachedTrips.meta };
     }
 
     return { data: [], meta: undefined };
-  }, [trips, cachedData]);
+  }, [trips, cachedTrips, isCacheValid]);
 
   const handleLoadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
