@@ -67,6 +67,7 @@ const TripDetailScreen = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TripDetailListItem
+            id={item.id}
             goDetail={() => {
               router.push({
                 pathname: "/(trip)/[tripId]/[tripDetailId]",
@@ -75,7 +76,7 @@ const TripDetailScreen = () => {
             }}
             title={item.title}
             date={dayjs(item.createdAt).format("YYYY.MM.DD")}
-            handleModal={() => {}}
+            handleModal={handleModal}
           />
         )}
         ListEmptyComponent={() => (

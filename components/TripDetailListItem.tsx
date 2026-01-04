@@ -5,13 +5,15 @@ import { memo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 interface TripDetailListItemProps {
+  id: string;
   title: string;
   date: string;
-  handleModal: () => void;
+  handleModal: (tripDetailId: string) => void;
   goDetail: () => void;
 }
 
 const TripDetailListItem = ({
+  id,
   title,
   date,
   handleModal,
@@ -25,7 +27,7 @@ const TripDetailListItem = ({
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.date}>{date}</Text>
         </View>
-        <Pressable onPress={handleModal}>
+        <Pressable onPress={() => handleModal(id)}>
           <MaterialIcons name="more-vert" size={24} color="black" />
         </Pressable>
       </View>
