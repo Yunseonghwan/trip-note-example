@@ -17,6 +17,7 @@ const TripDetailScreen = () => {
   const [selectedTripDetailId, setSelectedTripDetailId] = useState<
     string | null
   >(null);
+
   const {
     data: tripDetails,
     isFetchingNextPage,
@@ -68,6 +69,7 @@ const TripDetailScreen = () => {
         renderItem={({ item }) => (
           <TripDetailListItem
             id={item.id}
+            image={item.image}
             goDetail={() => {
               router.push({
                 pathname: "/(trip)/[tripId]/[tripDetailId]",
@@ -97,7 +99,14 @@ const TripDetailScreen = () => {
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
       />
-      <PlusButton onPress={() => router.push("/[tripId]/createTripDetail")} />
+      <PlusButton
+        onPress={() =>
+          router.push({
+            pathname: "/[tripId]/createTripDetail",
+            params: { tripId: tripId as string },
+          })
+        }
+      />
       <Modal
         isOpen={isModalOpen}
         selectedId={selectedTripDetailId}

@@ -10,18 +10,20 @@ interface TripDetailListItemProps {
   date: string;
   handleModal: (tripDetailId: string) => void;
   goDetail: () => void;
+  image: string;
 }
 
 const TripDetailListItem = ({
   id,
   title,
   date,
+  image,
   handleModal,
   goDetail,
 }: TripDetailListItemProps) => {
   return (
     <Pressable onPress={goDetail}>
-      <Image contentFit="cover" source={{ uri: "" }} style={styles.image} />
+      <Image contentFit="cover" source={{ uri: image }} style={styles.image} />
       <View style={styles.container}>
         <View style={styles.leftContainer}>
           <Text style={styles.title}>{title}</Text>

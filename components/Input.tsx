@@ -10,14 +10,25 @@ import {
 
 interface InputProps extends TextInputProps {
   label: string;
+  height?: number;
 }
 
-const Input = ({ label, placeholder, editable, ...props }: InputProps) => {
+const Input = ({
+  label,
+  placeholder,
+  editable,
+  height = 52,
+  ...props
+}: InputProps) => {
   return (
     <View style={styles.inputContainer}>
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput
-        style={[styles.input, editable === false && styles.disabledInput]}
+        style={[
+          styles.input,
+          editable === false && styles.disabledInput,
+          { height },
+        ]}
         placeholder={placeholder}
         autoCapitalize="none"
         autoCorrect={false}
@@ -40,7 +51,6 @@ const styles = StyleSheet.create({
     fontFamily: theme.fonts.regular,
   },
   input: {
-    height: 52,
     backgroundColor: theme.colors.white,
     borderRadius: 20,
     paddingHorizontal: 20,

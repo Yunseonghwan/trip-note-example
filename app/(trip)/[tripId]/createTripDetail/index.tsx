@@ -1,11 +1,13 @@
+import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { theme } from "@/constants/theme";
-import { useGetWeather } from "@/hooks/useTripDetail";
+import { useCreateTripDetail, useGetWeather } from "@/hooks/useTripDetail";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import * as Linking from "expo-linking";
 import * as Location from "expo-location";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -15,21 +17,43 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 const CreateTripDetail = () => {
-  const [image, setImage] = useState<string | null>(null);
+  const router = useRouter();
+  const { tripId } = useLocalSearchParams<{ tripId: string }>();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [image, setImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
-
-  console.log(location?.coords.latitude, location?.coords.longitude);
 
   const { data: weather } = useGetWeather(
     location?.coords.latitude ?? 0,
     location?.coords.longitude ?? 0
   );
-  console.log(weather?.weather);
+
+  const { mutateAsync } = useCreateTripDetail();
+
+  const handleCreateTripDetail = async () => {
+    await mutateAsync(
+      {
+        tripId: tripId as string,
+        title: title,
+        content: content,
+        image: image as ImagePicker.ImagePickerAsset,
+        weather: weather?.weather[0].main,
+      },
+      {
+        onSuccess: () => {
+          router.back();
+        },
+      }
+    );
+  };
+
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -51,7 +75,7 @@ const CreateTripDetail = () => {
       quality: 1,
     });
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImage(result.assets[0]);
     }
   };
 
@@ -80,6 +104,8 @@ const CreateTripDetail = () => {
         return "🌧️ 비";
       case "Snow":
         return "❄️ 눈";
+      case "Mist":
+        return "🌫️ 안개";
     }
   };
 
@@ -93,7 +119,7 @@ const CreateTripDetail = () => {
         <ScrollView contentContainerStyle={styles.formContainer}>
           {image ? (
             <Image
-              source={{ uri: image }}
+              source={{ uri: image.uri }}
               style={styles.image}
               contentFit="cover"
             />
@@ -104,12 +130,28 @@ const CreateTripDetail = () => {
             </Pressable>
           )}
 
-          <Input label="제목" placeholder="여행 이름을 입력하세요" />
+          <Input
+            label="제목"
+            placeholder="여행 이름을 입력하세요"
+            value={title}
+            onChangeText={setTitle}
+          />
           <Input
             label="날씨"
             editable={false}
             value={convertWeather(weather?.weather[0].main)}
           />
+          <Input
+            label="설명"
+            placeholder="내용을 입력하세요"
+            height={100}
+            multiline={true}
+            value={content}
+            onChangeText={setContent}
+          />
+          <View style={styles.buttonContainer}>
+            <Button label="여행 기록 추가" onPress={handleCreateTripDetail} />
+          </View>
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>
@@ -144,6 +186,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 150,
     borderRadius: 20,
+  },
+  buttonContainer: {
+    marginTop: "auto",
   },
 });
 
