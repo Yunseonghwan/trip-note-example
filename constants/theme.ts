@@ -4,6 +4,7 @@ export const theme = {
     white: "#FFFFFF",
     black: "#000000",
     gray: "#888888",
+    gray200: "#E0E0E0",
   },
   fonts: {
     bold: "Pretendard-Bold",
