@@ -1,5 +1,6 @@
 import Input from "@/components/Input";
 import { theme } from "@/constants/theme";
+import { useGetWeather } from "@/hooks/useTripDetail";
 import Entypo from "@expo/vector-icons/Entypo";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
@@ -16,13 +17,19 @@ import {
   Text,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 const CreateTripDetail = () => {
   const [image, setImage] = useState<string | null>(null);
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
 
+  console.log(location?.coords.latitude, location?.coords.longitude);
+
+  const { data: weather } = useGetWeather(
+    location?.coords.latitude ?? 0,
+    location?.coords.longitude ?? 0
+  );
+  console.log(weather?.weather);
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -63,7 +70,18 @@ const CreateTripDetail = () => {
     getCurrentLocation();
   }, []);
 
-  console.log(location);
+  const convertWeather = (weather: string) => {
+    switch (weather) {
+      case "Clear":
+        return "☀️ 맑음";
+      case "Clouds":
+        return "🌥️ 흐림";
+      case "Rain":
+        return "🌧️ 비";
+      case "Snow":
+        return "❄️ 눈";
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -87,7 +105,11 @@ const CreateTripDetail = () => {
           )}
 
           <Input label="제목" placeholder="여행 이름을 입력하세요" />
-          <Input label="날씨" editable={false} />
+          <Input
+            label="날씨"
+            editable={false}
+            value={convertWeather(weather?.weather[0].main)}
+          />
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>
