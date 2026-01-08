@@ -1,13 +1,17 @@
 import { api } from "@/api";
 import {
   CreateTripDetailRequestType,
+  TripDetailItemType,
   TripItemListResponseType,
+  UpdateTripDetailRequestType,
 } from "@/types/tripTypes";
 import {
   useInfiniteQuery,
   UseInfiniteQueryResult,
   useMutation,
   useQuery,
+  useQueryClient,
+  UseQueryResult,
 } from "@tanstack/react-query";
 import axios from "axios";
 
@@ -53,6 +57,7 @@ export const useGetWeather = (latitude: number, longitude: number) => {
 
 // TripItem 생성 (multipart form data)
 export const useCreateTripDetail = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: CreateTripDetailRequestType) => {
       const formData = new FormData();
@@ -86,6 +91,82 @@ export const useCreateTripDetail = () => {
         },
       });
       return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trip-items"] });
+    },
+  });
+};
+
+export const useGetTripDetail = (
+  tripDetailId: string
+): UseQueryResult<TripDetailItemType> => {
+  return useQuery({
+    queryKey: ["trip-detail", tripDetailId],
+    queryFn: async () => {
+      const res = await api.get(`/trip-items/${tripDetailId}`);
+      return res.data;
+    },
+  });
+};
+
+export const useUpdateTripDetail = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: UpdateTripDetailRequestType) => {
+      const formData = new FormData();
+
+      if (data.title) {
+        formData.append("title", data.title);
+      }
+
+      if (data.content) {
+        formData.append("content", data.content);
+      }
+
+      if (data.weather) {
+        formData.append("weather", data.weather);
+      }
+
+      if (data.image) {
+        const filename = data.image.fileName ?? "image.jpg";
+        const match = /\.(\w+)$/.exec(filename);
+        const type = match ? `image/${match[1]}` : "image/jpeg";
+
+        formData.append("image", {
+          uri: data.image.uri,
+          name: filename,
+          type,
+        } as unknown as Blob);
+      }
+
+      const res = await api.patch(
+        `/trip-items/${data.tripDetailId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trip-detail"] });
+      queryClient.invalidateQueries({ queryKey: ["trip-items"] });
+    },
+  });
+};
+
+export const useDeleteTripDetail = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (tripDetailId: string) => {
+      const res = await api.delete(`/trip-items/${tripDetailId}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["trip-items"] });
     },
   });
 };

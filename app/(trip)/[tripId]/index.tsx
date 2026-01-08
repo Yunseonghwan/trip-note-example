@@ -1,6 +1,6 @@
 import PlusButton from "@/components/PlusButton";
 import TripDetailListItem from "@/components/TripDetailListItem";
-import { useGetTripDetails } from "@/hooks/useTripDetail";
+import { useDeleteTripDetail, useGetTripDetails } from "@/hooks/useTripDetail";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet, Text } from "react-native";
@@ -25,6 +25,8 @@ const TripDetailScreen = () => {
     fetchNextPage,
   } = useGetTripDetails(tripId as string);
 
+  const { mutateAsync } = useDeleteTripDetail();
+
   const combinedTripDetails = useMemo(() => {
     const data = tripDetails?.pages.flatMap((page) => page.data) ?? [];
     const meta = tripDetails?.pages[0]?.meta;
@@ -48,7 +50,7 @@ const TripDetailScreen = () => {
   };
 
   const handleEdit = (tripDetailId: string) => {
-    router.push({
+    router.navigate({
       pathname: "/[tripId]/updateTripDetail",
       params: { tripId: tripId as string, tripDetailId },
     });
@@ -56,7 +58,11 @@ const TripDetailScreen = () => {
   };
 
   const handleDelete = (tripDetailId: string) => {
-    console.log(tripDetailId);
+    mutateAsync(tripDetailId, {
+      onSuccess: () => {
+        handleCloseModal();
+      },
+    });
     handleCloseModal();
   };
 

@@ -21,7 +21,9 @@ export interface TripListResponseType {
 export interface TripDetailItemType {
   id: string;
   title: string;
+  content: string;
   image: string;
+  weather: string;
   createdAt: string | Date;
 }
 
@@ -36,4 +38,12 @@ export interface CreateTripDetailRequestType {
   content?: string;
   weather?: string;
   image: ImagePicker.ImagePickerAsset;
+}
+
+export interface UpdateTripDetailRequestType {
+  tripDetailId: string;
+  title?: string;
+  content?: string;
+  weather?: string;
+  image?: ImagePicker.ImagePickerAsset;
 }
