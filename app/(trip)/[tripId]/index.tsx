@@ -1,9 +1,16 @@
 import PlusButton from "@/components/PlusButton";
 import TripDetailListItem from "@/components/TripDetailListItem";
+import TripDetailListItemSkeleton from "@/components/TripDetailListItemSkeleton";
 import { useDeleteTripDetail, useGetTripDetails } from "@/hooks/useTripDetail";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, StyleSheet, Text } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import Modal from "@/components/Modal";
 import { theme } from "@/constants/theme";
@@ -20,6 +27,7 @@ const TripDetailScreen = () => {
 
   const {
     data: tripDetails,
+    isLoading,
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
@@ -65,6 +73,18 @@ const TripDetailScreen = () => {
     });
     handleCloseModal();
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView edges={["bottom"]} style={styles.container}>
+        <View style={styles.listContainer}>
+          {[1, 2, 3].map((item) => (
+            <TripDetailListItemSkeleton key={item} />
+          ))}
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.container}>
