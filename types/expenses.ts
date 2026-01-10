@@ -1,3 +1,5 @@
+import { MetaType } from "./common";
+
 export type ExpenseCategory = "FOOD" | "TRANSPORT" | "LODGING" | "ACTIVITY";
 
 export interface CreateExpensesRequestType {
@@ -5,4 +7,17 @@ export interface CreateExpensesRequestType {
   amount: number;
   category: ExpenseCategory;
   memo?: string;
+}
+
+export interface ExpenseItemType {
+  id: string;
+  amount: number;
+  category: ExpenseCategory;
+  createdAt: string | Date;
+}
+
+export interface ExpenseListResponseType {
+  data: ExpenseItemType[];
+  meta: MetaType;
+  totalAmout: number;
 }
