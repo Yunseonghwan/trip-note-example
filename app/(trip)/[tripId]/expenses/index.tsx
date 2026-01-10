@@ -1,3 +1,5 @@
+import ExpensesHeader from "@/components/ExpensesHeader";
+import ExpensesItem from "@/components/ExpensesItem";
 import PlusButton from "@/components/PlusButton";
 import { theme } from "@/constants/theme";
 import { useGetExpenses } from "@/hooks/useExpenses";
@@ -37,8 +39,16 @@ const ExpensesListScreen = () => {
         data={combinedExpenses.data ?? []}
         contentContainerStyle={styles.listContainer}
         keyExtractor={(item) => item.id}
-        ListHeaderComponent={() => <></>}
-        renderItem={({ item }) => <></>}
+        ListHeaderComponent={() => (
+          <ExpensesHeader totalAmount={combinedExpenses.totalAmount} />
+        )}
+        renderItem={({ item }) => (
+          <ExpensesItem
+            amount={item.amount}
+            category={item.category}
+            createdAt={item.createdAt}
+          />
+        )}
         ListEmptyComponent={() => (
           <Text
             style={{
