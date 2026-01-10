@@ -1,6 +1,10 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { theme } from "@/constants/theme";
+import { useCreateExpenses } from "@/hooks/useExpenses";
+import { ExpenseCategory } from "@/types/expenses";
+import { useLocalSearchParams, useRouter } from "expo-router";
+
 import { useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -13,8 +17,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type ExpenseCategory = "FOOD" | "TRANSPORT" | "LODGING" | "ACTIVITY";
-
 const EXPENSE_CATEGORIES: ExpenseCategory[] = [
   "FOOD",
   "LODGING",
@@ -23,10 +25,14 @@ const EXPENSE_CATEGORIES: ExpenseCategory[] = [
 ];
 
 const CreateExpenses = () => {
+  const router = useRouter();
+  const { tripId } = useLocalSearchParams<{ tripId: string }>();
   const [selectedCategory, setSelectedCategory] =
     useState<ExpenseCategory>("FOOD");
   const [amount, setAmount] = useState("");
   const [memo, setMemo] = useState("");
+
+  const { mutateAsync } = useCreateExpenses();
 
   const handleCategorySelect = (category: ExpenseCategory) => {
     setSelectedCategory(category);
@@ -34,11 +40,19 @@ const CreateExpenses = () => {
 
   const handleCreateExpense = () => {
     // TODO: 경비 생성 로직
-    console.log({
-      category: selectedCategory,
-      amount,
-      memo,
-    });
+    mutateAsync(
+      {
+        tripId: tripId as string,
+        amount: Number(amount),
+        category: selectedCategory,
+        memo,
+      },
+      {
+        onSuccess: () => {
+          router.back();
+        },
+      }
+    );
   };
 
   const getCategoryLabel = (category: ExpenseCategory) => {
