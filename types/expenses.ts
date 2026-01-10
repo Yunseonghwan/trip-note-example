@@ -14,6 +14,7 @@ export interface ExpenseItemType {
   amount: number;
   category: ExpenseCategory;
   createdAt: string | Date;
+  memo?: string;
 }
 
 export interface ExpenseListResponseType {

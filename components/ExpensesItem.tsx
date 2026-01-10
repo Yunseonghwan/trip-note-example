@@ -6,9 +6,11 @@ import { memo, useMemo } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 interface ExpensesItemProps {
+  id: string;
   amount: number;
   category: ExpenseCategory;
   createdAt: string | Date;
+  handleModal: (expenseId: string) => void;
 }
 
 const getCategoryIcon = (category: ExpenseCategory) => {
@@ -50,7 +52,13 @@ const getCategoryColor = (category: ExpenseCategory) => {
   }
 };
 
-const ExpensesItem = ({ amount, category, createdAt }: ExpensesItemProps) => {
+const ExpensesItem = ({
+  id,
+  amount,
+  category,
+  createdAt,
+  handleModal,
+}: ExpensesItemProps) => {
   const formattedCreatedAt = useMemo(() => {
     return dayjs(createdAt).format("YYYY-MM-DD HH:mm");
   }, [createdAt]);
@@ -74,7 +82,7 @@ const ExpensesItem = ({ amount, category, createdAt }: ExpensesItemProps) => {
           <Text style={styles.createdAt}>{formattedCreatedAt}</Text>
         </View>
       </View>
-      <Pressable>
+      <Pressable onPress={() => handleModal(id)}>
         <MaterialIcons name="more-vert" size={24} color="black" />
       </Pressable>
     </Pressable>
