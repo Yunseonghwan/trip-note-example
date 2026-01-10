@@ -1,11 +1,35 @@
-import { Text, View } from "react-native";
+import PlusButton from "@/components/PlusButton";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ScrollView, StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ExpensesListScreen = () => {
+  const { tripId } = useLocalSearchParams();
+  const router = useRouter();
+
   return (
-    <View>
-      <Text>여행 경비 리스트</Text>
-    </View>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <ScrollView>
+        <Text>여행 경비 리스트</Text>
+      </ScrollView>
+
+      <PlusButton
+        onPress={() =>
+          router.navigate({
+            pathname: "/(trip)/[tripId]/expenses/createExpenses",
+            params: { tripId: tripId as string },
+          })
+        }
+      />
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+});
 
 export default ExpensesListScreen;

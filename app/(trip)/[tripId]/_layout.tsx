@@ -1,12 +1,13 @@
 import { theme } from "@/constants/theme";
-import { useTripTitleStore } from "@/store/tripTitleStore";
+import { useTripInfoStore } from "@/store/tripInfoStore";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Link, Stack, useRouter } from "expo-router";
-import { Pressable } from "react-native";
+import { Stack, useRouter } from "expo-router";
+import { Pressable, Text } from "react-native";
 
 const TripDetailLayout = () => {
   const router = useRouter();
-  const { title } = useTripTitleStore();
+  const { title, tripId } = useTripInfoStore((state) => state);
+
   return (
     <Stack>
       <Stack.Screen
@@ -23,16 +24,24 @@ const TripDetailLayout = () => {
             </Pressable>
           ),
           headerRight: () => (
-            <Link
-              href="/(trip)/[tripId]/expenses"
-              style={{
-                fontSize: 16,
-                fontFamily: theme.fonts.medium,
-                color: theme.colors.primary,
-              }}
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/(trip)/[tripId]/expenses",
+                  params: { tripId },
+                })
+              }
             >
-              경비 관리
-            </Link>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontFamily: theme.fonts.medium,
+                  color: theme.colors.primary,
+                }}
+              >
+                경비
+              </Text>
+            </Pressable>
           ),
         }}
       />
@@ -82,7 +91,7 @@ const TripDetailLayout = () => {
         }}
       />
 
-      <Stack.Screen name="expenses" options={{ title: "여행 상세 경비" }} />
+      <Stack.Screen name="expenses" options={{ headerShown: false }} />
     </Stack>
   );
 };

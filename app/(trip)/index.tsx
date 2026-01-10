@@ -3,8 +3,8 @@ import PlusButton from "@/components/PlusButton";
 import TripListItem from "@/components/TripListItem";
 import { theme } from "@/constants/theme";
 import { useDeleteTrip, useGetTrips } from "@/hooks/useTrip";
+import { useTripInfoStore } from "@/store/tripInfoStore";
 import { useTripStore } from "@/store/tripStore";
-import { useTripTitleStore } from "@/store/tripTitleStore";
 import { Text } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const MyTripList = () => {
   const router = useRouter();
-  const { setTitle } = useTripTitleStore((state) => state.action);
+  const { setTripInfo } = useTripInfoStore((state) => state.action);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
 
@@ -96,7 +96,7 @@ const MyTripList = () => {
             startDate={item.startDate}
             endDate={item.endDate}
             goDetail={() => {
-              setTitle(item.title);
+              setTripInfo(item.title, item.id);
               router.push({
                 pathname: "/(trip)/[tripId]",
                 params: { tripId: item.id },
