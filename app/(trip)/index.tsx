@@ -9,7 +9,11 @@ import { Text } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
-
+import {
+  BannerAd,
+  BannerAdSize,
+  TestIds,
+} from "react-native-google-mobile-ads";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MyTripList = () => {
@@ -85,7 +89,21 @@ const MyTripList = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+     
       <Text style={styles.title}>내 여행</Text>
+      <BannerAd
+        // 프로덕션: 실제 광고 ID 사용
+        // unitId="ca-app-pub-0000000000/000000000"
+        // 개발: 테스트 ID 사용 (TestIds.BANNER)
+        unitId={TestIds.ADAPTIVE_BANNER}
+        size={BannerAdSize.LARGE_BANNER}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: true,
+          networkExtras: {
+            collapsible: "bottom",
+          },
+        }}
+      />
       <FlatList
         data={combinedTrips?.data}
         contentContainerStyle={styles.listContainer}
