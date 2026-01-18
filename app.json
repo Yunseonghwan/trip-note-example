@@ -50,6 +50,13 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-7329136317570597~3680330839",
+          "iosAppId": "ca-app-pub-7329136317570597~8928788085"
+        }
       ]
     ],
     "experiments": {
