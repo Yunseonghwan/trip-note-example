@@ -11,6 +11,11 @@ import {
   Text,
   View,
 } from "react-native";
+import {
+  BannerAd,
+  BannerAdSize,
+  TestIds,
+} from "react-native-google-mobile-ads";
 
 import Modal from "@/components/Modal";
 import { theme } from "@/constants/theme";
@@ -92,21 +97,50 @@ const TripDetailScreen = () => {
         data={combinedTripDetails.data ?? []}
         contentContainerStyle={styles.listContainer}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TripDetailListItem
-            id={item.id}
-            image={item.image}
-            goDetail={() => {
-              router.push({
-                pathname: "/(trip)/[tripId]/[tripDetailId]",
-                params: { tripId: tripId as string, tripDetailId: item.id },
-              });
-            }}
-            title={item.title}
-            date={dayjs(item.createdAt).format("YYYY.MM.DD")}
-            handleModal={handleModal}
-          />
-        )}
+        renderItem={({ item, index }) => {
+          const pageSize = combinedTripDetails.meta?.limit ?? 10;
+          const totalItems = combinedTripDetails.data.length;
+
+          // 각 페이지의 마지막 아이템인지 확인 (index는 0부터 시작)
+          const isLastItemOfPage = (index + 1) % pageSize === 0;
+          // 전체 데이터의 마지막 아이템인지 확인
+          const isLastItem = index === totalItems - 1;
+          // 총 데이터가 한 페이지 미만인지 확인
+          const isLessThanOnePage = totalItems < pageSize;
+
+          // 배너 표시 조건: 페이지의 마지막 아이템이거나, 한 페이지 미만이면서 마지막 아이템일 때
+          const showAd = isLastItemOfPage || (isLessThanOnePage && isLastItem);
+
+          return (
+            <>
+              <TripDetailListItem
+                id={item.id}
+                image={item.image}
+                goDetail={() => {
+                  router.push({
+                    pathname: "/(trip)/[tripId]/[tripDetailId]",
+                    params: { tripId: tripId as string, tripDetailId: item.id },
+                  });
+                }}
+                title={item.title}
+                date={dayjs(item.createdAt).format("YYYY.MM.DD")}
+                handleModal={handleModal}
+              />
+              {/* 각 페이지의 마지막 아이템 뒤에 배너 광고 표시 */}
+              {showAd && (
+                <View style={styles.adContainer}>
+                  <BannerAd
+                    unitId={TestIds.ADAPTIVE_BANNER}
+                    size={BannerAdSize.LARGE_BANNER}
+                    requestOptions={{
+                      requestNonPersonalizedAdsOnly: true,
+                    }}
+                  />
+                </View>
+              )}
+            </>
+          );
+        }}
         ListEmptyComponent={() => (
           <Text
             style={{
@@ -152,6 +186,10 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     gap: 20,
+  },
+  adContainer: {
+    marginTop: 20,
+    alignItems: "center",
   },
 });
 
